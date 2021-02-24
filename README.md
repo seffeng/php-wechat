@@ -37,7 +37,8 @@ class SiteController extends Controller
         try {
             $appid = '';
             $secret = '';
-            $wechat = new Wechat($appid, $secret);
+            $cacheClass = null; // 缓存处理类，提供 get($key) 和 set($key, $value, $ttl) 方法
+            $wechat = new Wechat($appid, $secret, null, $cacheClass);
             var_dump($wechat->getAccessToken());
             var_dump($wechat->getJsapiTicket());
             print_r($wechat->getSignPackage('https://url.cn'));
