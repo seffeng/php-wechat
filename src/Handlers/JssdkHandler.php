@@ -304,15 +304,7 @@ class JssdkHandler
             $jsapiTicket = $this->getJsapiTicket();
             $timestamp = time();
             $nonceStr = $this->createNonceStr();
-
-            $params = [
-                'jsapi_ticket' => $jsapiTicket,
-                'noncestr' => $nonceStr,
-                'timestamp' => $timestamp,
-                'url' => $url,
-            ];
-            ksort($params);
-            $string = http_build_query($params);
+            $string = 'jsapi_ticket=' . $jsapiTicket . '&noncestr=' . $nonceStr . '&timestamp=' . $timestamp . '&url=' . $url;
             $signature = sha1($string);
 
             return [
