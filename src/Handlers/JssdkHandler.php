@@ -27,19 +27,7 @@ class JssdkHandler
      *
      * @var string
      */
-    private $tokenUri = '/cgi-bin/token';
-
-    /**
-     *
-     * @var string
-     */
     private $ticketUri = '/cgi-bin/ticket/getticket';
-
-    /**
-     *
-     * @var string
-     */
-    private $cacheKeyAccessToken = 'AccessToken:1614009600';
 
     /**
      *
@@ -74,6 +62,30 @@ class JssdkHandler
         $this->appSecret = $appSecret;
         $this->httpClient = $httpClient;
         $this->cache = $cache;
+    }
+
+    /**
+     *
+     * @author zxf
+     * @date   2021年3月25日
+     * @return string
+     */
+    public function getAccessToken()
+    {
+        return $this->accessToken;
+    }
+
+    /**
+     *
+     * @author zxf
+     * @date   2021年3月25日
+     * @param string $token
+     * @return static
+     */
+    public function setAccessToken(string $token)
+    {
+        $this->accessToken = $token;
+        return $this;
     }
 
     /**
@@ -126,55 +138,6 @@ class JssdkHandler
      *
      * @author zxf
      * @date   2021年2月23日
-     * @param string $uri
-     * @return static
-     */
-    public function setTicketUri(string $uri)
-    {
-        $this->ticketUri = $uri;
-        return $this;
-    }
-
-    /**
-     *
-     * @author zxf
-     * @date   2021年2月23日
-     * @return string
-     */
-    public function getTokenUri()
-    {
-        return $this->tokenUri;
-    }
-
-
-    /**
-     *
-     * @author zxf
-     * @date   2021年2月23日
-     * @param mixed $cache
-     * @return static
-     */
-    public function setCacheKeyAccessToken(string $key)
-    {
-        $this->cacheKeyAccessToken = $key;
-        return $this;
-    }
-
-    /**
-     *
-     * @author zxf
-     * @date   2021年2月23日
-     * @return mixed
-     */
-    public function getCacheKeyAccessToken()
-    {
-        return $this->cacheKeyAccessToken;
-    }
-
-    /**
-     *
-     * @author zxf
-     * @date   2021年2月23日
      * @param mixed $cache
      * @return static
      */
@@ -193,54 +156,6 @@ class JssdkHandler
     public function getCacheKeyJsapiTicket()
     {
         return $this->cacheKeyJsapiTicket;
-    }
-
-    /**
-     *
-     * @author zxf
-     * @date   2021年2月23日
-     * @throws WechatException
-     * @throws \Exception
-     * @return string
-     */
-    public function getAccessToken()
-    {
-        try {
-            if (is_object($this->getCache()) && method_exists($this->getCache(), 'get')) {
-                if ($data = $this->getCache()->get($this->getCacheKeyAccessToken())) {
-                    return $data;
-                }
-            }
-            $request = $this->getHttpClient()->get($this->getTokenUri(), [
-                'query' => [
-                    'grant_type' => 'client_credential',
-                    'appid' => $this->getAppid(),
-                    'secret' => $this->getSecret()
-                ]
-            ]);
-
-            if ($request->getStatusCode() === 200) {
-                $body = $request->getBody()->getContents();
-                $body = json_decode($body, true);
-                if (isset($body['access_token'])) {
-                    if (is_object($this->getCache())) {
-                        $this->getCache()->set($this->getCacheKeyAccessToken(), $body['access_token'], $body['expires_in'] - 120);
-                    }
-                    return $body['access_token'];
-                } elseif (isset($body['errcode'])) {
-                    throw new WechatException((new Error($body['errcode']))->getName());
-                }
-            }
-            throw new WechatException('网络错误或接口请求异常！');
-        } catch (RequestException $e) {
-            $message = $e->getResponse()->getBody()->getContents();
-            if (!$message) {
-                $message = $e->getMessage();
-            }
-            throw new WechatException($message);
-        } catch (\Exception $e) {
-            throw $e;
-        }
     }
 
     /**
