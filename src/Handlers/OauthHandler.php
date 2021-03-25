@@ -81,6 +81,7 @@ class OauthHandler
                 if (isset($body['openid'])) {
                     return [
                         'openid' => $body['openid'],
+                        'unionid' => isset($body['unionid']) ? $body['unionid'] : '',
                         'sessionKey' => $body['session_key']
                     ];
                 } elseif (isset($body['errcode'])) {
