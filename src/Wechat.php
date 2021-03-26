@@ -183,6 +183,58 @@ class Wechat
     /**
      *
      * @author zxf
+     * @date   2021年3月26日
+     * @param string $scene
+     * @param string $page
+     * @param int $width
+     * @param bool $autoColor
+     * @param array $lineColor
+     * @param bool $isHyaline
+     * @throws WechatException
+     * @throws \Exception
+     * @return string
+     */
+    public function wxaUnlimitedQRCode(string $scene = '', string $page = '', int $width = 430, bool $autoColor = false, array $lineColor = ['r' => 0, 'g' => 0, 'b' => 0], bool $isHyaline = false)
+    {
+        try {
+            $params = [
+                'page' => $page,
+                'width' => $width,
+                'auto_color' => $autoColor,
+                'line_color' => $lineColor,
+                'is_hyaline' => $isHyaline,
+            ];
+            if (!$scene) {
+                $scene = '_t=' . time();
+            }
+            $params['scene'] = $scene;
+            $request = $this->getHttpClient()->post('/wxa/getwxacodeunlimit?access_token=' . $this->getAccessToken(), [
+                'json' => $params
+            ]);
+            if ($request->getStatusCode() === 200) {
+                $body = $request->getBody()->getContents();
+                $bodyArray = json_decode($body, true);
+                if (is_array($bodyArray) && isset($bodyArray['errcode'])) {
+                    throw new WechatException((new Error($bodyArray['errcode']))->getName());
+                } else {
+                    return $body;
+                }
+            }
+            throw new WechatException('网络错误或接口请求异常！');
+        } catch (RequestException $e) {
+            $message = $e->getResponse()->getBody()->getContents();
+            if (!$message) {
+                $message = $e->getMessage();
+            }
+            throw new WechatException($message);
+        } catch (\Exception $e) {
+            throw $e;
+        }
+    }
+
+    /**
+     *
+     * @author zxf
      * @date   2021年2月23日
      * @param string $appid
      * @return static

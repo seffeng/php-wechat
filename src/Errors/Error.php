@@ -129,6 +129,7 @@ class Error
             '41007' => '缺少子菜单数据！',
             '41008' => '缺少 oauth code！',
             '41009' => '缺少 openid！',
+            '41030' => '所传page页面不存在！',
             '42001' => 'access_token 超时，请检查 access_token 的有效期，请参考基础支持 - 获取 access_token 中，对 access_token 的详细机制说明！',
             '42002' => 'refresh_token 超时！',
             '42003' => 'oauth_code 超时！',
